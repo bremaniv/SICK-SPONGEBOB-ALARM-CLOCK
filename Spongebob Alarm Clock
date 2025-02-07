@@ -1,0 +1,68 @@
+#Library Imports to form the alarm clock:
+from tkinter import *
+from tkinter import font as tkFont
+import datetime
+import time
+import threading
+import pygame
+
+# Initialize pygame mixer ( for sound playback )
+pygame.mixer.init()
+
+def alarm(set_alarm_timer):
+    while True:
+        time.sleep(1) # wait 1 second before checking the time again
+        current_time = datetime.datetime.now()
+        now = current_time.strftime("%H:%M:%S")
+        date = current_time.strftime("%d/%m/%Y")
+        print(f"[DEBUG] Date: {date}, Current Time: {now}, Alarm Time: {set_alarm_timer}")
+
+        if now == set_alarm_timer:
+            print ("RING RING, B***H")
+            status_label.config(text="Wake up, Spongebob! Alarm ringing!", fg="red")
+            # play Jellyfish_Jam mp3 file here
+            pygame.mixer.music.load("/Users/manivongb/Downloads/jellyfish_jam.mp3")
+            pygame.mixer.music.play(-1)
+            break # Stop loop once the alarm rings. TS like 2.5 minutes tho
+
+# Function to get the actual time input and stat the alarm 
+def actual_time():
+    set_alarm_timer = f"{hour.get():0>2}:{min.get():0>2}:{sec.get():0>2}"
+    print(f"[DEBUG]] Alarm Set for: {set_alarm_timer}")
+    alarm_thread = threading.Thread(target=alarm, args=(set_alarm_timer,))
+    alarm_thread.start()
+
+# GUI Setup
+clock = Tk()
+clock.title("Jellyfish Jam Alarm Clock")
+clock.geometry ("400x200")
+clock.configure(bg="#F7C1DA") #changing the background color to the awesome spongebob jellyfish color
+
+# Defining the spongebob font aka Krabby Patty 
+krabby_font = tkFont.Font(family="Krabby Patty", size=20)
+
+#Labels using the Krabby Patty font
+time_format=Label(clock, text= "Enter time in 24 hour format!", fg="#DB0862",bg="#F27CB1", font = krabby_font).place(x=60,y=120)
+addTime = Label(clock,text = "Hour   Min        Sec", font = 100).place(x = 210)
+setYourAlarm = Label(clock,text = "When to wake you up", fg="#DB0862",relief = "solid", font = krabby_font).place(x=0, y=29)
+
+# ** Define Tkinter Variables** (These fix the "undefined variable" error)
+hour = StringVar()
+min = StringVar()
+sec = StringVar()
+
+#Time required to set the alarm clock:
+hourTime = Entry(clock, textvariable = hour,bg = "#F27CB1",width = 15).place(x=210,y=30)
+minTime = Entry(clock, textvariable = min,bg = "#F27CB1",width = 5).place(x=250,y=30)
+secTime = Entry(clock, textvariable = sec,bg = "#F27CB1",width = 5).place(x=300,y=30)
+
+#Status label to display messages
+status_label = Label(clock, text="" , bg="#F7C1DA", font=("krabby_font",12))
+status_label.place(x=60, y=160)
+
+#To take the time input by the user:
+submit = Button(clock,text = "Set Alarm", fg= "#F27CB1",bg = "#DB0862", width = 10,command = actual_time).place(x=110,y=70)
+
+clock.mainloop()
+#Execution of the window.
+
